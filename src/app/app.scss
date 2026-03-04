@@ -1,0 +1,56 @@
+// Global styles for dark/light mode support
+
+input,
+select,
+textarea {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+
+    &:focus {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+    }
+}
+
+label {
+    color: var(--text-secondary);
+}
+
+button {
+    &:not(.theme-toggle) {
+        background-color: var(--button-bg);
+        color: var(--button-text);
+
+        &:hover:not(:disabled) {
+            background-color: var(--button-hover-bg);
+        }
+
+        &:disabled {
+            background-color: var(--border-color);
+            opacity: 0.5;
+        }
+    }
+}
+
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--text-primary);
+}
+
+p {
+    color: var(--text-secondary);
+}
+
+li {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+ul {
+    color: var(--text-primary);
+}

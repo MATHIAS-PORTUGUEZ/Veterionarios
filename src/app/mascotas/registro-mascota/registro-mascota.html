@@ -1,0 +1,39 @@
+<div class="page-header">
+    <div class="header-content">
+        <div class="header-text">
+            <h2>Registrar nueva mascota</h2>
+            <p class="welcome-text">Tu mascota en las mejores manos</p>
+        </div>
+        <div class="header-image">
+            <img src="/image.png" alt="Perro Golden Retriever" />
+        </div>
+    </div>
+</div>
+<form [formGroup]="form" (ngSubmit)="submit()">
+    <div>
+        <label>Nombre</label>
+        <input formControlName="nombre" />
+    </div>
+    <div>
+        <label>Especie</label>
+        <input formControlName="especie" />
+    </div>
+    <div>
+        <label>Raza</label>
+        <input formControlName="raza" />
+    </div>
+    <div>
+        <label>Edad</label>
+        <input type="number" formControlName="edad" />
+    </div>
+    <h3>Datos del dueño</h3>
+    <div>
+        <label>Nombre</label>
+        <input formControlName="duenoNombre" />
+    </div>
+    <div>
+        <label>Teléfono</label>
+        <input formControlName="duenoTelefono" />
+    </div>
+    <button type="submit" class="btn-green" [disabled]="form.invalid">Guardar</button>
+</form>

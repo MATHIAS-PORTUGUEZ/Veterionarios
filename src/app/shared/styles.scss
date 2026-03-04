@@ -1,0 +1,101 @@
+form {
+    \n display: flex;
+    \n flex-direction: column;
+    \n gap: 1rem;
+    \n max-width: 500px;
+    \n margin-bottom: 2rem;
+    \n
+}
+
+\n\nform div {
+    \n display: flex;
+    \n flex-direction: column;
+    \n gap: 0.5rem;
+    \n
+}
+
+\n\nlabel {
+    \n font-weight: bold;
+    \n color: #333;
+    \n
+}
+
+\n\ninput,
+select {
+    \n padding: 0.5rem;
+    \n border: 1px solid #ddd;
+    \n border-radius: 4px;
+    \n font: inherit;
+    \n
+}
+
+\n\ninput:focus,
+select:focus {
+    \n outline: none;
+    \n border-color: #667eea;
+    \n box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+    \n
+}
+
+\n\nbutton {
+    \n padding: 0.75rem 1.5rem;
+    \n background-color: #667eea;
+    \n color: white;
+    \n border: none;
+    \n border-radius: 4px;
+    \n cursor: pointer;
+    \n font: inherit;
+    \n font-weight: bold;
+    \n transition: background-color 0.3s;
+    \n
+}
+
+\n\nbutton:hover:not(:disabled) {
+    \n background-color: #764ba2;
+    \n
+}
+
+\n\nbutton:disabled {
+    \n background-color: #ccc;
+    \n cursor: not-allowed;
+    \n
+}
+
+\n\nh2 {
+    \n color: #667eea;
+    \n border-bottom: 2px solid #667eea;
+    \n padding-bottom: 0.5rem;
+    \n
+}
+
+\n\nh3 {
+    \n color: #764ba2;
+    \n margin-top: 2rem;
+    \n
+}
+
+\n\nul {
+    \n list-style: none;
+    \n padding: 0;
+    \n
+}
+
+\n\nli {
+    \n padding: 0.75rem;
+    \n border-left: 4px solid #667eea;
+    \n background-color: #f9f9f9;
+    \n margin-bottom: 0.5rem;
+    \n border-radius: 2px;
+    \n
+}
+
+\n\n.no-records {
+    \n color: #999;
+    \n font-style: italic;
+    \n padding: 1rem;
+    \n background-color: #f0f0f0;
+    \n border-radius: 4px;
+    \n
+}
+
+\n"

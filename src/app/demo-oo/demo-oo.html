@@ -1,0 +1,98 @@
+<div class="demo-container">
+    <h1>Demo POO</h1>
+
+    <div class="demo-section">
+        <h2>1. Mascotas</h2>
+        <div class="card-grid">
+            <div class="card" *ngFor="let m of mascotas">
+                <h3>{{ m.getNombre() }}</h3>
+                <p>ID: {{ m.getIdentificador() }}</p>
+                <p>Especie: {{ m.especie }}</p>
+                <p>Raza: {{ m.raza || 'No especificada' }}</p>
+                <p>Edad: {{ m.edad }} anos</p>
+                <p class="saludo">{{ m.saludar() }}</p>
+                <button (click)="mostrarDetalles(m)">Ver mas</button>
+            </div>
+            <button class="btn-primary" (click)="crearNuevaMascota()">+ Nueva Mascota</button>
+        </div>
+
+        <div class="demo-section">
+            <h2>2. Herencia y Polimorfismo</h2>
+            <button (click)="demostrarPolimorfismo()">Ejecutar Demo</button>
+            <div *ngIf="resultadoPolimorfismo" class="resultado">
+                {{ resultadoPolimorfismo }}
+            </div>
+
+            <div class="demo-section">
+                <h2>3. Encapsulamiento</h2>
+                <div class="demo-form">
+                    <input [(ngModel)]="nuevaEdad" type="number" placeholder="Nueva edad" />
+                    <button (click)="actualizarEdad()">Actualizar</button>
+                </div>
+                <div *ngIf="mensajeError" class="error">{{ mensajeError }}</div>
+                <div *ngIf="mensajeExito" class="exito">{{ mensajeExito }}</div>
+
+                <div class="demo-section">
+                    <h2>4. Validacion</h2>
+                    <div class="card" *ngIf="mascotaSeleccionada">
+                        <h3>{{ mascotaSeleccionada.nombre }}</h3>
+                        <div *ngIf="!mascotaSeleccionada.isValid()">
+                            <ul>
+                                <li *ngFor="let error of mascotaSeleccionada.validar().errores">
+                                    {{ error }}
+                                </li>
+                            </ul>
+                        </div>
+                        <div *ngIf="mascotaSeleccionada.isValid()" class="exito">
+                            Valido
+                        </div>
+                    </div>
+
+                    <div class="demo-section">
+                        <h2>5. Citas (Observer)</h2>
+                        <div class="card-grid">
+                            <div class="card" *ngFor="let c of citas">
+                                <h3>{{ c.getIdentificador() }}</h3>
+                                <p>{{ c.mascota.nombre }}</p>
+                                <p>{{ c.fecha | date:'medium' }}</p>
+                                <span class="badge" [ngClass]="c.estado">{{ c.estado }}</span>
+                                <div class="acciones">
+                                    <button (click)="c.confirmar()">Confirmar</button>
+                                    <button (click)="c.completar()">Completar</button>
+                                    <button (click)="c.cancelar()">Cancelar</button>
+                                </div>
+                            </div>
+                            <div *ngIf="notificaciones.length > 0" class="notificaciones">
+                                <div *ngFor="let n of notificaciones" class="notif-item">
+                                    {{ n }}
+                                </div>
+                            </div>
+
+                            <div class="demo-section">
+                                <h2>6. Busqueda</h2>
+                                <div class="busqueda">
+                                    <input [(ngModel)]="busquedaNombre" placeholder="Buscar..." />
+                                    <select [(ngModel)]="busquedaEspecie">
+                                        <option value="">Todas</option>
+                                        <option value="perro">Perros</option>
+                                        <option value="gato">Gatos</option>
+                                    </select>
+                                    <button (click)="buscarMascotas()">Buscar</button>
+                                </div>
+
+                                <div class="demo-section">
+                                    <h2>7. Estadisticas</h2>
+                                    <div class="stats-grid">
+                                        <div class="stat-card">
+                                            <h3>{{ estadisticas.totalMascotas }}</h3>
+                                            <p>Mascotas</p>
+                                        </div>
+                                        <div class="stat-card">
+                                            <h3>{{ estadisticas.totalCitas }}</h3>
+                                            <p>Citas</p>
+                                        </div>
+                                        <div class="stat-card">
+                                            <h3>{{ estadisticas.citasProximas }}</h3>
+                                            <p>Proximas</p>
+                                        </div>
+                                    </div>

@@ -1,0 +1,119 @@
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    gap: 2rem;
+}
+
+.page-header h2 {
+    margin: 0;
+    flex: 1;
+}
+
+.header-icon {
+    width: 150px;
+    height: 150px;
+    color: var(--text-primary);
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 500px;
+    margin-bottom: 2rem;
+}
+
+form div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+label {
+    font-weight: bold;
+    color: var(--text-secondary);
+}
+
+input,
+select {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    border-radius: 4px;
+    font: inherit;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+}
+
+button {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font: inherit;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    width: max-content;
+}
+
+button:hover:not(:disabled) {
+    background-color: var(--button-hover-bg);
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    padding: 0.75rem;
+    border-left: 4px solid #667eea;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    border-radius: 2px;
+    transition: transform 0.2s;
+}
+
+li:hover {
+    transform: translateX(5px);
+}
+
+.cancel-btn {
+    background-color: #d32f2f !important;
+
+    &:hover:not(:disabled) {
+        background-color: #b71c1c !important;
+    }
+}
+
+.btn-green {
+    padding: 0.6rem 1rem;
+    background-color: #2e7d32;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-green:hover:not(:disabled) {
+    background-color: #245f27;
+}
