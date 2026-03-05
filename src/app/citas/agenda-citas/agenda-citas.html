@@ -1,20 +1,89 @@
 <div class="page-header">
-    <h2>Agenda de citas</h2>
-    <svg class="header-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 40 180 Q 100 120, 160 180" stroke="currentColor" stroke-width="20" fill="none" stroke-linecap="round"
-            stroke-linejoin="round" />
-        <ellipse cx="100" cy="80" rx="35" ry="45" fill="currentColor" />
-        <ellipse cx="60" cy="40" rx="18" ry="28" fill="currentColor" />
-        <ellipse cx="85" cy="20" rx="16" ry="26" fill="currentColor" />
-        <ellipse cx="115" cy="20" rx="16" ry="26" fill="currentColor" />
-        <ellipse cx="140" cy="40" rx="18" ry="28" fill="currentColor" />
-        <rect x="85" y="60" width="30" height="40" fill="white" />
-        <rect x="75" y="70" width="50" height="20" fill="white" />
-    </svg>
+    <div class="header-content">
+        <div class="header-text">
+            <h2>Agenda de citas</h2>
+            <p class="welcome-text">Gestiona las citas de tus mascotas</p>
+        </div>
+        <div class="header-image">
+            <img src="/image.png" alt="Perro Golden Retriever" />
+        </div>
+    </div>
 </div>
-<div *ngIf="mensaje"
-    style="padding:1rem;margin-bottom:1rem;border-radius:4px;background-color:var(--bg-secondary);color:#2e7d32;border-left:4px solid #2e7d32;">
-    {{ mensaje }}</div>
+
+<!-- Modal interactivo de cita -->
+<div *ngIf="mostrarMensajeExito" class="modal-overlay" (click)="cerrarMensaje()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <!-- Modal para nueva cita -->
+        <ng-container *ngIf="tipoModal === 'nueva'">
+            <div class="modal-header success">
+                <span class="modal-icon">✅</span>
+                <h3>¡Cita Agendada!</h3>
+            </div>
+            <div class="modal-body">
+                <div class="detail-row">
+                    <span class="detail-label">🐕 Mascota:</span>
+                    <span class="detail-value">{{citaRegistrada?.mascota}}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">👤 Dueño:</span>
+                    <span class="detail-value">{{citaRegistrada?.dueno}}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">📅 Fecha:</span>
+                    <span class="detail-value">{{citaRegistrada?.fecha | date:'dd/MM/yyyy - HH:mm'}}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">📋 Motivo:</span>
+                    <span class="detail-value">{{citaRegistrada?.motivo}}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">⏰ Estado:</span>
+                    <span class="detail-value status-pending">Pendiente</span>
+                </div>
+            </div>
+        </ng-container>
+
+        <!-- Modal para ver cita existente -->
+        <ng-container *ngIf="tipoModal === 'ver'">
+            <div class="modal-header info">
+                <span class="modal-icon">📋</span>
+                <h3>Detalles de la Cita</h3>
+            </div>
+            <div class="modal-body">
+                <div class="detail-row">
+                    <span class="detail-label">🐕 Mascota:</span>
+                    <span class="detail-value">{{citaRegistrada?.mascota}}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">👤 Dueño:</span>
+                    <span class="detail-value">{{citaRegistrada?.dueno}}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">📅 Fecha:</span>
+                    <span class="detail-value">{{citaRegistrada?.fecha | date:'dd/MM/yyyy - HH:mm'}}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">📋 Motivo:</span>
+                    <span class="detail-value">{{citaRegistrada?.motivo}}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">⏰ Estado:</span>
+                    <span class="detail-value" [ngClass]="{
+                        'status-pending': citaRegistrada?.estado === 'pendiente',
+                        'status-confirmed': citaRegistrada?.estado === 'confirmada',
+                        'status-cancelled': citaRegistrada?.estado === 'cancelada',
+                        'status-completed': citaRegistrada?.estado === 'completada'
+                    }">{{citaRegistrada?.estado | estadoCita}}</span>
+                </div>
+            </div>
+        </ng-container>
+
+        <div class="modal-footer">
+            <button class="btn-modal" (click)="cerrarMensaje()">Aceptar</button>
+        </div>
+    </div>
+</div>
+
 <form [formGroup]="form" (ngSubmit)="submit()">
     <div>
         <label>Mascota</label>
@@ -25,7 +94,7 @@
     </div>
     <div>
         <label>Fecha y hora</label>
-        <input type="datetime-local" formControlName="fecha" />
+        <input type="datetime-local" formControlName="fecha" [min]="minFecha" />
     </div>
     <div>
         <label>Motivo</label>
@@ -33,17 +102,22 @@
     </div>
     <button type="submit" class="btn-green" [disabled]="form.invalid">Agendar</button>
 </form>
-<h3>Citas existentes</h3>
-<ul *ngIf="citas.length>0;else noCitas">
-    <li *ngFor="let c of citas" [appDestacaProxima]="c.fecha"
-        style="display:flex;justify-content:space-between;align-items:center;">
-        <span>{{c.fecha|date:"short"}} - {{c.mascota.nombre}} ({{c.motivo}}) -
-            <strong>{{c.estado|estadoCita}}</strong></span>
-        <button *ngIf="c.estado!=='cancelada'&&c.estado!=='completada'" (click)="cancelarCita(c.id)"
-            style="padding:0.4rem 0.8rem;background-color:#d32f2f;color:white;border:none;border-radius:4px;cursor:pointer;font-size:0.85rem;font-weight:bold;">Cancelar</button>
-        <span *ngIf="c.estado==='cancelada'||c.estado==='completada'" style="color:#999;font-size:0.85rem;">-</span>
-    </li>
-</ul>
-<ng-template #noCitas>
-    <p style="color:#999;font-style:italic;">No hay citas registradas</p>
-</ng-template>
+
+<!-- Solo mostrar citas existentes cuando NO hay modal de éxito -->
+<div *ngIf="!mostrarMensajeExito">
+    <h3>Citas existentes (haz clic en una para ver detalles)</h3>
+    <ul *ngIf="citas.length>0;else noCitas">
+        <li *ngFor="let c of citas" [appDestacaProxima]="c.fecha" (click)="verCita(c)"
+            style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;" class="cita-item">
+            <span>{{c.fecha|date:"short"}} - {{c.mascota.nombre}} ({{c.motivo}}) -
+                <strong>{{c.estado|estadoCita}}</strong></span>
+            <button *ngIf="c.estado!=='cancelada'&&c.estado!=='completada'"
+                (click)="cancelarCita(c.id); $event.stopPropagation()"
+                style="padding:0.4rem 0.8rem;background-color:#d32f2f;color:white;border:none;border-radius:4px;cursor:pointer;font-size:0.85rem;font-weight:bold;">Cancelar</button>
+            <span *ngIf="c.estado==='cancelada'||c.estado==='completada'" style="color:#999;font-size:0.85rem;">-</span>
+        </li>
+    </ul>
+    <ng-template #noCitas>
+        <p style="color:#999;font-style:italic;">No hay citas registradas</p>
+    </ng-template>
+</div>

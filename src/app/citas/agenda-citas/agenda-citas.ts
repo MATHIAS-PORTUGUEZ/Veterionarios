@@ -19,6 +19,12 @@ export class AgendaCitas implements OnInit {
   mascotas: Mascota[] = [];
   citas: any[] = [];
   mensaje: string = '';
+  minFecha: string = '';
+
+  // Variables para mensaje detallado
+  mostrarMensajeExito: boolean = false;
+  citaRegistrada: any = null;
+  tipoModal: 'nueva' | 'ver' = 'nueva';
 
   constructor(
     private fb: FormBuilder,
@@ -35,6 +41,13 @@ export class AgendaCitas implements OnInit {
   ngOnInit() {
     this.cargarMascotas();
     this.citas = this.citaService.getAll();
+    this.minFecha = this.getFechaMinima();
+  }
+
+  getFechaMinima(): string {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
   }
 
   cargarMascotas() {
@@ -48,24 +61,55 @@ export class AgendaCitas implements OnInit {
         const mascotaId = Number(v.mascotaId);
         const mascota = this.mascotas.find(m => m.id === mascotaId);
 
-        if (mascota) {
-          this.citaService.add({
-            id: 0,
-            mascota,
-            fecha: new Date(v.fecha),
-            motivo: v.motivo || 'Sin especificar',
-            estado: 'pendiente',
-          });
-          this.citas = this.citaService.getAll();
-          this.form.reset();
-          this.mensaje = '✅ Cita agendada exitosamente';
+        if (!mascota) {
+          this.mensaje = '❌ Mascota no encontrada';
           setTimeout(() => this.mensaje = '', 3000);
+          return;
         }
+
+        const nuevaCita = {
+          id: 0,
+          mascota,
+          fecha: new Date(v.fecha),
+          motivo: v.motivo || 'Sin especificar',
+          estado: 'pendiente' as const,
+        };
+        this.citaService.add(nuevaCita);
+        this.citas = this.citaService.getAll();
+
+        // Guardar datos para mensaje detallado
+        this.citaRegistrada = {
+          mascota: mascota.nombre,
+          fecha: new Date(v.fecha),
+          motivo: v.motivo || 'Sin especificar',
+          dueno: mascota.dueno?.nombre || 'No especificado'
+        };
+        this.mostrarMensajeExito = true;
+
+        this.form.reset();
       } catch (error) {
+        console.error('Error al agendar:', error);
         this.mensaje = '❌ Error al agendar la cita';
         setTimeout(() => this.mensaje = '', 3000);
       }
     }
+  }
+
+  cerrarMensaje() {
+    this.mostrarMensajeExito = false;
+    this.citaRegistrada = null;
+  }
+
+  verCita(cita: any) {
+    this.citaRegistrada = {
+      mascota: cita.mascota.nombre,
+      fecha: cita.fecha,
+      motivo: cita.motivo,
+      dueno: cita.mascota.dueno?.nombre || 'No especificado',
+      estado: cita.estado
+    };
+    this.tipoModal = 'ver';
+    this.mostrarMensajeExito = true;
   }
 
   cancelarCita(citaId: number) {
