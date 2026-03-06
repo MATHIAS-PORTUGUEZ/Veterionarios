@@ -10,72 +10,43 @@
     </div>
 </div>
 
-<!-- Modal de detalles de la mascota -->
-<div *ngIf="mostrarDetalleMascota && mascotaSeleccionada" class="modal-overlay" (click)="cerrarDetalle()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-        <div class="modal-header info">
-            <span class="modal-icon">🐾</span>
-            <h3>{{mascotaSeleccionada.nombre}}</h3>
-        </div>
-        <div class="modal-body">
-            <div class="detail-row">
-                <span class="detail-label">🦴 Especie:</span>
-                <span class="detail-value">{{mascotaSeleccionada.especie}}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">🐕 Raza:</span>
-                <span class="detail-value">{{mascotaSeleccionada.raza || 'No especificada'}}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">🎂 Edad:</span>
-                <span class="detail-value">{{mascotaSeleccionada.edad ? mascotaSeleccionada.edad + ' años' : 'No
-                    especificada'}}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">👤 Dueño:</span>
-                <span class="detail-value">{{mascotaSeleccionada.dueno?.nombre || 'No especificado'}}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">📞 Teléfono:</span>
-                <span class="detail-value">{{mascotaSeleccionada.dueno?.telefono || 'No especificado'}}</span>
-            </div>
-
-            <div *ngIf="historial.length > 0" class="historial-resumen">
-                <h4>📋 Citas ({{historial.length}})</h4>
-                <ul class="historial-list">
-                    <li *ngFor="let c of historial" (click)="verCita(c)" class="cita-clickable">
-                        <span class="historial-fecha">{{c.fecha | date:'dd/MM/yyyy'}}</span>
-                        <span class="historial-motivo">{{c.motivo}}</span>
-                        <span class="historial-estado" [class]="c.estado">{{c.estado | estadoCita}}</span>
-                    </li>
-                </ul>
-            </div>
-            <div *ngIf="historial.length === 0" class="sin-historial">
-                <p>No hay citas registradas para esta mascota</p>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-modal" (click)="cerrarDetalle()">Cerrar</button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal de cita individual -->
+<!-- Modal de historial -->
 <div *ngIf="mostrarModalCita && citaSeleccionada" class="modal-overlay" (click)="cerrarModalCita()">
     <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-header success">
             <span class="modal-icon">📋</span>
-            <h3>Detalles de la Cita</h3>
+            <h3>Historial</h3>
         </div>
         <div class="modal-body">
+            <!-- Datos de la mascota -->
             <div class="detail-row">
-                <span class="detail-label">🐕 Mascota:</span>
+                <span class="detail-label">🐾 Mascota:</span>
                 <span class="detail-value">{{citaSeleccionada.mascota}}</span>
             </div>
+            <div class="detail-row">
+                <span class="detail-label">🦴 Especie:</span>
+                <span class="detail-value">{{citaSeleccionada.especie}}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">🐕 Raza:</span>
+                <span class="detail-value">{{citaSeleccionada.raza}}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">🎂 Edad:</span>
+                <span class="detail-value">{{citaSeleccionada.edad}} años</span>
+            </div>
+
+            <!-- Datos del dueño -->
             <div class="detail-row">
                 <span class="detail-label">👤 Dueño:</span>
                 <span class="detail-value">{{citaSeleccionada.dueno}}</span>
             </div>
+            <div class="detail-row">
+                <span class="detail-label">📞 Teléfono:</span>
+                <span class="detail-value">{{citaSeleccionada.telefono}}</span>
+            </div>
+
+            <!-- Datos de la cita -->
             <div class="detail-row">
                 <span class="detail-label">📅 Fecha:</span>
                 <span class="detail-value">{{citaSeleccionada.fecha | date:'dd/MM/yyyy - HH:mm'}}</span>
@@ -84,6 +55,18 @@
                 <span class="detail-label">📋 Motivo:</span>
                 <span class="detail-value">{{citaSeleccionada.motivo}}</span>
             </div>
+
+            <!-- Veterinario asignado -->
+            <div *ngIf="citaSeleccionada.veterinario" class="detail-row">
+                <span class="detail-label">👨‍⚕️ Veterinario:</span>
+                <span class="detail-value vet-recommended">{{citaSeleccionada.veterinario.nombre}}</span>
+            </div>
+            <div *ngIf="citaSeleccionada.veterinario" class="detail-row">
+                <span class="detail-label">🏥 Especialidad:</span>
+                <span class="detail-value">{{citaSeleccionada.veterinario.especialidad}}</span>
+            </div>
+
+            <!-- Estado -->
             <div class="detail-row">
                 <span class="detail-label">⏰ Estado:</span>
                 <span class="detail-value" [ngClass]="{

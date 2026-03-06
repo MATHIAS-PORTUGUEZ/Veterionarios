@@ -3,7 +3,9 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { CommonModule } from '@angular/common';
 import { CitaService } from '../../services/cita';
 import { MascotaService } from '../../services/mascota';
+import { RecomendacionService } from '../../services/recomendacion.service';
 import { Mascota } from '../../models/mascota.model';
+import { Veterinario, MOTIVOS_CITA, OpcionMotivo } from '../../models/veterinario.model';
 import { EstadoCitaPipe } from '../../pipes/estado-cita-pipe';
 import { DestacaProxima } from '../../directives/destaca-proxima';
 
@@ -21,6 +23,12 @@ export class AgendaCitas implements OnInit {
   mensaje: string = '';
   minFecha: string = '';
 
+  // Opciones de motivos para el dropdown
+  motivos: OpcionMotivo[] = MOTIVOS_CITA;
+
+  // Veterinario recomendado según el motivo seleccionado
+  veterinarioRecomendado: Veterinario | null = null;
+
   // Variables para mensaje detallado
   mostrarMensajeExito: boolean = false;
   citaRegistrada: any = null;
@@ -29,12 +37,13 @@ export class AgendaCitas implements OnInit {
   constructor(
     private fb: FormBuilder,
     private citaService: CitaService,
-    private mascotaService: MascotaService
+    private mascotaService: MascotaService,
+    private recomendacionService: RecomendacionService
   ) {
     this.form = this.fb.group({
       mascotaId: ['', Validators.required],
       fecha: ['', Validators.required],
-      motivo: [''],
+      motivoId: ['', Validators.required],
     });
   }
 
@@ -54,6 +63,29 @@ export class AgendaCitas implements OnInit {
     this.mascotas = this.mascotaService.getAll();
   }
 
+  /**
+   * Se ejecuta cuando el usuario selecciona un motivo
+   * Recomienda automáticamente un veterinario especializado
+   */
+  onMotivoChange(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const motivoId = select.value;
+
+    if (motivoId) {
+      this.veterinarioRecomendado = this.recomendacionService.obtenerVeterinarioRecomendado(motivoId) || null;
+    } else {
+      this.veterinarioRecomendado = null;
+    }
+  }
+
+  /**
+   * Obtiene el label del motivo por su ID
+   */
+  getLabelMotivo(motivoId: string): string {
+    const motivo = this.motivos.find(m => m.id === motivoId);
+    return motivo?.label || 'Sin especificar';
+  }
+
   submit() {
     if (this.form.valid) {
       try {
@@ -67,11 +99,22 @@ export class AgendaCitas implements OnInit {
           return;
         }
 
+        if (!this.veterinarioRecomendado) {
+          this.mensaje = '❌ Por favor selecciona un motivo para recomendar un veterinario';
+          setTimeout(() => this.mensaje = '', 3000);
+          return;
+        }
+
+        const labelMotivo = this.getLabelMotivo(v.motivoId);
+
         const nuevaCita = {
           id: 0,
           mascota,
           fecha: new Date(v.fecha),
-          motivo: v.motivo || 'Sin especificar',
+          motivoId: v.motivoId,
+          motivoLabel: labelMotivo,
+          motivo: labelMotivo, // Guardamos también en motivo para compatibilidad con historial
+          veterinario: this.veterinarioRecomendado,
           estado: 'pendiente' as const,
         };
         this.citaService.add(nuevaCita);
@@ -81,12 +124,15 @@ export class AgendaCitas implements OnInit {
         this.citaRegistrada = {
           mascota: mascota.nombre,
           fecha: new Date(v.fecha),
-          motivo: v.motivo || 'Sin especificar',
-          dueno: mascota.dueno?.nombre || 'No especificado'
+          motivo: this.getLabelMotivo(v.motivoId),
+          motivoId: v.motivoId,
+          dueno: mascota.dueno?.nombre || 'No especificado',
+          veterinario: this.veterinarioRecomendado
         };
         this.mostrarMensajeExito = true;
 
         this.form.reset();
+        this.veterinarioRecomendado = null;
       } catch (error) {
         console.error('Error al agendar:', error);
         this.mensaje = '❌ Error al agendar la cita';
@@ -104,9 +150,10 @@ export class AgendaCitas implements OnInit {
     this.citaRegistrada = {
       mascota: cita.mascota.nombre,
       fecha: cita.fecha,
-      motivo: cita.motivo,
+      motivo: cita.motivoLabel || cita.motivo,
       dueno: cita.mascota.dueno?.nombre || 'No especificado',
-      estado: cita.estado
+      estado: cita.estado,
+      veterinario: cita.veterinario
     };
     this.tipoModal = 'ver';
     this.mostrarMensajeExito = true;
@@ -124,3 +171,4 @@ export class AgendaCitas implements OnInit {
     }
   }
 }
+

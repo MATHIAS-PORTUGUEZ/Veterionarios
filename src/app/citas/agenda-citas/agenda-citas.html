@@ -36,6 +36,10 @@
                     <span class="detail-label">📋 Motivo:</span>
                     <span class="detail-value">{{citaRegistrada?.motivo}}</span>
                 </div>
+                <div class="detail-row" *ngIf="citaRegistrada?.veterinario">
+                    <span class="detail-label">👨‍⚕️ Veterinario:</span>
+                    <span class="detail-value vet-recommended">{{citaRegistrada?.veterinario?.nombre}}</span>
+                </div>
                 <div class="detail-row">
                     <span class="detail-label">⏰ Estado:</span>
                     <span class="detail-value status-pending">Pendiente</span>
@@ -65,6 +69,10 @@
                 <div class="detail-row">
                     <span class="detail-label">📋 Motivo:</span>
                     <span class="detail-value">{{citaRegistrada?.motivo}}</span>
+                </div>
+                <div class="detail-row" *ngIf="citaRegistrada?.veterinario">
+                    <span class="detail-label">👨‍⚕️ Veterinario:</span>
+                    <span class="detail-value vet-recommended">{{citaRegistrada?.veterinario?.nombre}}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">⏰ Estado:</span>
@@ -97,10 +105,26 @@
         <input type="datetime-local" formControlName="fecha" [min]="minFecha" />
     </div>
     <div>
-        <label>Motivo</label>
-        <input type="text" formControlName="motivo" placeholder="Ej:Revision anual,Vacunacion" />
+        <label>Motivo de la consulta</label>
+        <select formControlName="motivoId" (change)="onMotivoChange($event)">
+            <option value="">-- Selecciona el motivo --</option>
+            <option *ngFor="let m of motivos" [value]="m.id">{{m.label}}</option>
+        </select>
     </div>
-    <button type="submit" class="btn-green" [disabled]="form.invalid">Agendar</button>
+
+    <!-- Mostrar veterinario recomendado cuando se selecciona un motivo -->
+    <div *ngIf="veterinarioRecomendado" class="vet-recommendation">
+        <div class="vet-card">
+            <div class="vet-icon">👨‍⚕️</div>
+            <div class="vet-info">
+                <span class="vet-label">Veterinario recomendado:</span>
+                <span class="vet-name">{{veterinarioRecomendado.nombre}}</span>
+                <span class="vet-specialty">{{veterinarioRecomendado.especialidad | titlecase}}</span>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn-green" [disabled]="form.invalid || !veterinarioRecomendado">Agendar</button>
 </form>
 
 <!-- Solo mostrar citas existentes cuando NO hay modal de éxito -->
@@ -109,7 +133,7 @@
     <ul *ngIf="citas.length>0;else noCitas">
         <li *ngFor="let c of citas" [appDestacaProxima]="c.fecha" (click)="verCita(c)"
             style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;" class="cita-item">
-            <span>{{c.fecha|date:"short"}} - {{c.mascota.nombre}} ({{c.motivo}}) -
+            <span>{{c.fecha|date:"short"}} - {{c.mascota.nombre}} ({{c.motivoLabel || c.motivo}}) -
                 <strong>{{c.estado|estadoCita}}</strong></span>
             <button *ngIf="c.estado!=='cancelada'&&c.estado!=='completada'"
                 (click)="cancelarCita(c.id); $event.stopPropagation()"

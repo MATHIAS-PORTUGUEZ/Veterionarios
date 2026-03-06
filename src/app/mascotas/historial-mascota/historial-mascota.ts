@@ -48,7 +48,8 @@ export class HistorialMascota implements OnInit {
 
       // Guardar datos de la mascota seleccionada
       this.mascotaSeleccionada = this.mascotas.find(m => m.id === id);
-      this.mostrarDetalleMascota = true;
+      // Ya no mostrar modal, solo mostrar la lista directamente
+      this.mostrarDetalleMascota = false;
     }
   }
 
@@ -67,12 +68,21 @@ export class HistorialMascota implements OnInit {
       mascota = this.mascotaSeleccionada;
     }
 
+    // Obtener el motivo - probar diferentes propiedades
+    const motivoMostrar = cita.motivoLabel || cita.motivo || cita.motivoId || 'Sin motivo';
+
     this.citaSeleccionada = {
       mascota: mascota?.nombre || 'No especificado',
+      especie: mascota?.especie || 'No especificada',
+      raza: mascota?.raza || 'No especificada',
+      edad: mascota?.edad || 'No especificada',
       fecha: cita.fecha,
-      motivo: cita.motivo,
+      motivo: motivoMostrar,
       dueno: mascota?.dueno?.nombre || this.mascotaSeleccionada?.dueno?.nombre || 'No especificado',
-      estado: cita.estado
+      telefono: mascota?.dueno?.telefono || this.mascotaSeleccionada?.dueno?.telefono || 'No especificado',
+      estado: cita.estado,
+      // Información del veterinario
+      veterinario: cita.veterinario || null,
     };
     this.mostrarModalCita = true;
     this.mostrarDetalleMascota = false;
